@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -32,10 +33,72 @@
     const AD_IDS = ADMOB_CONFIG[ADMOB_CONFIG.mode];
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <style>
+
+    /* ═══════════════════════════════════════════════════════════
+       Tailwind CSS utilities — purged & inlined (sin CDN)
+    ═══════════════════════════════════════════════════════════ */
+    .hidden{display:none!important}
+    .flex{display:flex}
+    .grid{display:grid}
+    .relative{position:relative}
+    .flex-1{flex:1 1 0%}
+    .flex-shrink-0{flex-shrink:0}
+    .flex-wrap{flex-wrap:wrap}
+    .items-start{align-items:flex-start}
+    .items-center{align-items:center}
+    .items-end{align-items:flex-end}
+    .justify-center{justify-content:center}
+    .justify-between{justify-content:space-between}
+    .grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .gap-1{gap:.25rem}
+    .gap-2{gap:.5rem}
+    .w-full{width:100%}
+    .min-h-26{min-height:26px}
+    .p-6{padding:1.5rem}
+    .px-4{padding-left:1rem;padding-right:1rem}
+    .py-3{padding-top:.75rem;padding-bottom:.75rem}
+    .py-10{padding-top:2.5rem;padding-bottom:2.5rem}
+    .py-16{padding-top:4rem;padding-bottom:4rem}
+    .pl-4{padding-left:1rem}
+    .pr-10{padding-right:2.5rem}
+    .mt-05{margin-top:.125rem}
+    .mt-1{margin-top:.25rem}
+    .mt-4{margin-top:1rem}
+    .mt-5{margin-top:1.25rem}
+    .mb-1{margin-bottom:.25rem}
+    .mb-2{margin-bottom:.5rem}
+    .mb-3{margin-bottom:.75rem}
+    .my-1{margin-top:.25rem;margin-bottom:.25rem}
+    .my-5{margin-top:1.25rem;margin-bottom:1.25rem}
+    .-mt-1{margin-top:-.25rem}
+    .text-xs{font-size:.75rem;line-height:1rem}
+    .text-sm{font-size:.875rem;line-height:1.25rem}
+    .text-base{font-size:1rem;line-height:1.5rem}
+    .text-2xl{font-size:1.5rem;line-height:2rem}
+    .font-light{font-weight:300}
+    .font-medium{font-weight:500}
+    .font-semibold{font-weight:600}
+    .leading-tight{line-height:1.25}
+    .capitalize{text-transform:capitalize}
+    .text-center{text-align:center}
+    .text-white{color:#fff}
+    .text-slate-400{color:#94a3b8}
+    .text-slate-500{color:#64748b}
+    .text-slate-600{color:#475569}
+    .text-slate-700{color:#334155}
+    .text-slate-800{color:#1e293b}
+    .bg-slate-700{background-color:#334155}
+    .bg-white-50{background-color:rgba(255,255,255,.5)}
+    .border{border-width:1px;border-style:solid}
+    .border-t{border-top-width:1px;border-top-style:solid}
+    .border-white-40{border-color:rgba(255,255,255,.4)}
+    .border-white-60{border-color:rgba(255,255,255,.6)}
+    .rounded-xl{border-radius:.75rem}
+    .underline{text-decoration-line:underline}
+
     * { box-sizing: border-box; }
 
     :root {
@@ -174,6 +237,12 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.07);
     }
     body.night .forecast-day.today { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.25); }
+    .forecast-day.selected-day {
+      outline: 2px solid #f59e0b;
+      outline-offset: -2px;
+      background: rgba(245,158,11,0.12);
+    }
+    body.night .forecast-day.selected-day { background: rgba(245,158,11,0.18); }
 
     .detail-chip {
       background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6);
@@ -242,7 +311,7 @@
 
     .section-label { font-size:.67rem; letter-spacing:.1em; text-transform:uppercase; font-weight:500; }
 
-    .tod-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+    .tod-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
     .tod-slot {
       background: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.6);
       border-radius: 1rem; padding: 10px 4px 8px; text-align: center;
@@ -309,7 +378,7 @@
   <div class="flex gap-2 mb-2 afu">
     <div class="flex-1 relative">
       <input id="city-input" type="text" placeholder="Ciudad…" value="Madrid"
-        class="w-full rounded-xl pl-4 pr-10 py-3 text-slate-700 bg-white/50 border border-white/60 text-sm" />
+        class="w-full rounded-xl pl-4 pr-10 py-3 text-slate-700 bg-white-50 border border-white-60 text-sm" />
       <button id="geo-btn" onclick="geoLocate()" title="Mi ubicación"
         style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;background:none;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .2s;"
         onmouseover="this.style.background='rgba(255,255,255,0.6)'"
@@ -333,7 +402,7 @@
       <span class="section-label text-slate-500" data-i18n="favorites">Favoritos</span>
       <span class="text-slate-400 text-xs" id="fav-hint" data-i18n="favHint">Pulsa ★ para guardar</span>
     </div>
-    <div id="fav-list" class="flex flex-wrap gap-2 min-h-[26px] items-center">
+    <div id="fav-list" class="flex flex-wrap gap-2 min-h-26 items-center">
       <span class="text-slate-400 text-xs" data-i18n="noFavs">Sin favoritos aún</span>
     </div>
   </div>
@@ -351,7 +420,7 @@
       <div class="flex items-start justify-between afu d1">
         <div>
           <h1 id="city-name" class="text-2xl text-slate-800 leading-tight">—</h1>
-          <p id="weather-date" class="text-slate-500 text-xs mt-0.5 capitalize"></p>
+          <p id="weather-date" class="text-slate-500 text-xs mt-05 capitalize"></p>
         </div>
         <button class="star-btn" id="star-btn" onclick="toggleFav()" title="Guardar en favoritos">☆</button>
       </div>
@@ -372,13 +441,16 @@
       <!-- Detalles -->
       <div id="details" class="grid grid-cols-3 gap-2 mt-5 afu d3"></div>
 
-      <div class="border-t border-white/40 my-5"></div>
+      <div class="border-t border-white-40 my-5"></div>
 
       <!-- Franjas horarias -->
-      <p class="section-label text-slate-400 mb-3 afu d4" data-i18n="todaySlots">Hoy por franjas</p>
+      <div class="flex items-center justify-between mb-3 afu d4">
+        <p class="section-label text-slate-400" data-i18n="todaySlots">Día por franjas</p>
+        <p class="text-slate-400 text-xs" id="tod-day-label"></p>
+      </div>
       <div id="tod" class="tod-grid afu d4"></div>
 
-      <div class="border-t border-white/40 my-5"></div>
+      <div class="border-t border-white-40 my-5"></div>
 
       <!-- Predicción 14 días -->
       <p class="section-label text-slate-400 mb-3 afu d5" data-i18n="next14">Próximos 14 días</p>
@@ -387,7 +459,7 @@
     </div>
   </div>
 
-  <p class="text-center text-slate-400/50 text-xs mt-4">
+  <p class="text-center text-slate-400 text-xs mt-4">
     <span data-i18n="dataBy">Datos:</span>
     <a href="https://open-meteo.com" target="_blank" class="underline">Open-Meteo</a>
     · <span data-i18n="noKey">sin API key</span>
@@ -412,7 +484,7 @@ const TRANSLATIONS = {
     favHint:     'Pulsa ★ para guardar',
     noFavs:      'Sin favoritos aún',
     favCount:    n => `${n} ciudad${n>1?'es':''}`,
-    todaySlots:  'Hoy por franjas',
+    todaySlots:  'Día por franjas',
     next14:      'Próximos 14 días',
     dataBy:      'Datos:',
     noKey:       'sin API key',
@@ -432,10 +504,13 @@ const TRANSLATIONS = {
     wind:        'Viento',
     windUnit:    'km/h',
     todayWord:   'Hoy',
-    // Franjas
-    morning:     'Mañana',
-    afternoon:   'Tarde',
-    night:       'Noche',
+    // Franjas (6)
+    dawn:        'Madrugada',   // 00-05
+    morning:     'Mañana',      // 06-11
+    midday:      'Mediodía',    // 12-14
+    afternoon:   'Tarde',       // 15-18
+    evening:     'Atardecer',   // 19-21
+    night:       'Noche',       // 22-23
     // Días de la semana
     days: ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
     // Fecha larga
@@ -461,7 +536,7 @@ const TRANSLATIONS = {
     favHint:     'Tap ★ to save',
     noFavs:      'No favourites yet',
     favCount:    n => `${n} cit${n>1?'ies':'y'}`,
-    todaySlots:  'Today at a glance',
+    todaySlots:  'Day by time slots',
     next14:      'Next 14 days',
     dataBy:      'Data:',
     noKey:       'no API key',
@@ -480,9 +555,12 @@ const TRANSLATIONS = {
     wind:        'Wind',
     windUnit:    'km/h',
     todayWord:   'Today',
-    morning:     'Morning',
-    afternoon:   'Afternoon',
-    night:       'Night',
+    dawn:        'Dawn',        // 00-05
+    morning:     'Morning',     // 06-11
+    midday:      'Midday',      // 12-14
+    afternoon:   'Afternoon',   // 15-18
+    evening:     'Evening',     // 19-21
+    night:       'Night',       // 22-23
     days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     dateLocale:  'en-GB',
     dateOpts:    {weekday:'long',day:'numeric',month:'long'},
@@ -616,6 +694,8 @@ let currentCity    = '';
 let favorites      = JSON.parse(localStorage.getItem('wx_favs') || '[]');
 let searchCount    = 0;
 let _lastRenderData = null;   // cache para re-render al cambiar idioma
+let _hourlyData    = null;    // datos horarios cacheados
+let _selectedDayIndex = 0;   // día seleccionado en el forecast (0 = hoy)
 
 
 // ════════════════════════════════════════════════════════════════
@@ -696,10 +776,12 @@ function render(name, country, data) {
   ].map(d => `
     <div class="detail-chip text-center">
       <p class="text-slate-500 text-xs">${d.label}</p>
-      <p class="text-slate-700 font-medium text-sm mt-0.5">${d.value}</p>
+      <p class="text-slate-700 font-medium text-sm mt-05">${d.value}</p>
     </div>`).join('');
 
-  renderTOD(data.hourly, now);
+  _hourlyData = data.hourly;
+  _selectedDayIndex = 0;
+  renderTOD(data.hourly, 0, daily.time[0]);
   renderForecast(daily);
 }
 
@@ -709,8 +791,10 @@ function renderForecast(daily) {
     const day       = i===0 ? t().todayWord : t().days[date.getDay()];
     const fw        = wmo(daily.weather_code[i]);
     const dateLabel = i===0 ? '' : `${date.getDate()}/${date.getMonth()+1}`;
+    const isSelected = i === _selectedDayIndex;
     return `
-      <div class="forecast-day ${i===0?'today':''}">
+      <div class="forecast-day ${i===0?'today':''} ${isSelected?'selected-day':''}"
+           onclick="selectDay(${i}, '${dateStr}')" style="cursor:pointer">
         <p class="text-xs font-medium ${i===0?'text-slate-700':'text-slate-500'}">${day}</p>
         ${dateLabel?`<p class="text-slate-400" style="font-size:.6rem;line-height:1.2">${dateLabel}</p>`:''}
         <p class="text-base my-1">${fw.icon}</p>
@@ -723,40 +807,62 @@ function renderForecast(daily) {
     <div class="forecast-row">${allDays.slice(7,14).join('')}</div>`;
 }
 
-function renderTOD(hourly, now) {
-  const h = now.getHours();
+function selectDay(index, dateStr) {
+  _selectedDayIndex = index;
+  // Re-render forecast para actualizar el día resaltado
+  if (_lastRenderData) renderForecast(_lastRenderData.data.daily);
+  // Re-render TOD con el día seleccionado
+  if (_hourlyData) renderTOD(_hourlyData, index, dateStr);
+}
+
+function renderTOD(hourly, dayIndex, dateStr) {
+  // 6 franjas horarias fijas
   const slots = [
-    {label:`${h}:00`, emoji:null,   start:h,  end:h,  current:true},
-    {label:t().morning,   emoji:'🌅', start:6,  end:11},
-    {label:t().afternoon, emoji:'☀️', start:13, end:17},
-    {label:t().night,     emoji:'🌙', start:20, end:23},
+    {label: t().dawn,      emoji:'🌙', start:0,  end:5 },
+    {label: t().morning,   emoji:'🌅', start:6,  end:11},
+    {label: t().midday,    emoji:'☀️', start:12, end:14},
+    {label: t().afternoon, emoji:'🌤️', start:15, end:18},
+    {label: t().evening,   emoji:'🌇', start:19, end:21},
+    {label: t().night,     emoji:'🌃', start:22, end:23},
   ];
-  const todayPrefix = now.toISOString().slice(0,10);
-  const hourIndex   = {};
-  hourly.time.forEach((ts,i) => {
-    if (ts.startsWith(todayPrefix)) hourIndex[parseInt(ts.slice(11,13))] = i;
+
+  // dateStr puede ser "2025-03-18" (de daily.time)
+  const prefix = dateStr ? dateStr.slice(0,10) : new Date().toISOString().slice(0,10);
+
+  // Construir índice hora → posición en arrays hourly
+  const hourIndex = {};
+  hourly.time.forEach((ts, i) => {
+    if (ts.startsWith(prefix)) hourIndex[parseInt(ts.slice(11,13))] = i;
   });
-  function sliceStats(s,e) {
-    const idxs=[];
-    for(let x=s;x<=e;x++) if(hourIndex[x]!==undefined) idxs.push(hourIndex[x]);
-    if(!idxs.length) return null;
-    const avg=Math.round(idxs.reduce((sum,i)=>sum+hourly.temperature_2m[i],0)/idxs.length);
-    return {temp:avg, code:hourly.weather_code[idxs[Math.floor(idxs.length/2)]]};
+
+  function sliceStats(s, e) {
+    const idxs = [];
+    for (let x = s; x <= e; x++) if (hourIndex[x] !== undefined) idxs.push(hourIndex[x]);
+    if (!idxs.length) return null;
+    const avg  = Math.round(idxs.reduce((sum,i) => sum + hourly.temperature_2m[i], 0) / idxs.length);
+    const code = hourly.weather_code[idxs[Math.floor(idxs.length / 2)]];
+    return { temp: avg, code };
   }
+
+  // Etiqueta del día seleccionado
+  const now = new Date();
+  const selectedDate = new Date(prefix + 'T12:00:00');
+  const isToday = prefix === now.toISOString().slice(0,10);
+  const dayLabel = isToday
+    ? t().todayWord
+    : selectedDate.toLocaleDateString(t().dateLocale, {weekday:'long', day:'numeric', month:'short'});
+  const labelEl = document.getElementById('tod-day-label');
+  if (labelEl) labelEl.textContent = dayLabel;
+
   document.getElementById('tod').innerHTML = slots.map(slot => {
-    let stats, icon, label=slot.label;
-    if(slot.current){
-      stats={temp:parseInt(document.getElementById('temp').textContent)};
-      icon=document.getElementById('weather-icon').textContent;
-    } else {
-      stats=sliceStats(slot.start,slot.end);
-      icon=stats?wmo(stats.code).icon:slot.emoji;
-    }
+    const stats = sliceStats(slot.start, slot.end);
+    const icon  = stats ? wmo(stats.code).icon : slot.emoji;
+    const temp  = stats ? stats.temp + '°' : '—';
     return `
-      <div class="tod-slot ${slot.current?'active':''}">
-        <p class="text-slate-500 text-xs font-medium mb-1">${label}</p>
+      <div class="tod-slot">
+        <p class="text-slate-500 text-xs font-medium mb-1">${slot.label}</p>
         <p class="tod-icon">${icon}</p>
-        <p class="text-slate-700 font-semibold text-sm mt-1">${stats?stats.temp+'°':'—'}</p>
+        <p class="text-slate-700 font-semibold text-sm mt-1">${temp}</p>
       </div>`;
   }).join('');
 }
