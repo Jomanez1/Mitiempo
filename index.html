@@ -5,7 +5,7 @@
   <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tiempo / Weather</title>
+  <title>Mitiempo</title>
 
   <!-- ════════════════════════════════════════════════════════════
        ★  CONFIGURACIÓN ADMOB  ★
@@ -1013,6 +1013,11 @@ if (_lastCity) {
 } else {
   fetchWeather();
 }
+</script>
+  <script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
 </script>
 </body>
 </html>
