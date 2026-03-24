@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -348,8 +347,12 @@
 <body>
 
 <!-- ── Banner superior ── -->
-<div class="ad-banner ad-banner-top" id="ad-banner-top" data-ad-unit-id="" data-ad-size="BANNER">
-  <span id="ad-top-label">📢 Ad · Top Banner (AdMob)</span>
+<div class="ad-banner ad-banner-top" id="ad-banner-top">
+  <ins class="adsbygoogle"
+       id="ins-banner-top"
+       style="display:inline-block;width:320px;height:50px"
+       data-ad-client=""
+       data-ad-slot=""></ins>
 </div>
 
 <!-- ── Intersticial overlay ── -->
@@ -469,8 +472,12 @@
 </div>
 
 <!-- ── Banner inferior ── -->
-<div class="ad-banner ad-banner-bottom" id="ad-banner-bottom" data-ad-unit-id="" data-ad-size="BANNER">
-  <span id="ad-bottom-label">📢 Ad · Bottom Banner (AdMob)</span>
+<div class="ad-banner ad-banner-bottom" id="ad-banner-bottom">
+  <ins class="adsbygoogle"
+       id="ins-banner-bottom"
+       style="display:inline-block;width:320px;height:50px"
+       data-ad-client=""
+       data-ad-slot=""></ins>
 </div>
 
 
@@ -599,8 +606,10 @@ function applyStaticTranslations() {
     if (typeof t()[key] === 'string') el.textContent = t()[key];
   });
   // Elementos fuera de data-i18n
-  document.getElementById('ad-top-label').textContent    = t().adBannerTop;
-  document.getElementById('ad-bottom-label').textContent = t().adBannerBot;
+  const _elTop = document.getElementById('ad-top-label');
+  if (_elTop) _elTop.textContent = t().adBannerTop;
+  const _elBot = document.getElementById('ad-bottom-label');
+  if (_elBot) _elBot.textContent = t().adBannerBot;
   document.getElementById('ad-inter-label-text').textContent    = t().adLabel;
   document.getElementById('ad-inter-placeholder-text').textContent = t().adPlaceholder;
   document.getElementById('star-btn').title              = t().starTitle;
@@ -631,46 +640,57 @@ function wmo(code) {
 //  ADMOB
 // ════════════════════════════════════════════════════════════════
 const AdMob = (() => {
-  function injectIds() {
-    document.getElementById('ad-banner-top').dataset.adUnitId    = AD_IDS.bannerTop;
-    document.getElementById('ad-banner-bottom').dataset.adUnitId = AD_IDS.bannerBottom;
-    document.getElementById('ad-inter-body').dataset.adUnitId    = AD_IDS.interstitial;
-  }
+
   function initBanners() {
-    injectIds();
+    // 1. Inyectar publisher ID y slots en los <ins> antes de cargar el script
+    const insTop = document.getElementById('ins-banner-top');
+    const insBot = document.getElementById('ins-banner-bottom');
+    if (insTop) {
+      insTop.setAttribute('data-ad-client', AD_IDS.appId.split('~')[0]);
+      insTop.setAttribute('data-ad-slot',   AD_IDS.bannerTop.split('/')[1]);
+    }
+    if (insBot) {
+      insBot.setAttribute('data-ad-client', AD_IDS.appId.split('~')[0]);
+      insBot.setAttribute('data-ad-slot',   AD_IDS.bannerBottom.split('/')[1]);
+    }
+
+    // 2. Cargar script de AdSense igual que MetroMaestro
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_IDS.appId.split('~')[0]}`;
+    script.crossOrigin = 'anonymous';
+    script.onload = () => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch(e) {}
+    };
+    script.onerror = () => {};
+    document.head.appendChild(script);
+
     if (ADMOB_CONFIG.mode === 'production') document.body.classList.add('ad-production');
-    if (window.admob) {
-      window.admob.showBanner({ adUnitId: AD_IDS.bannerTop,    position: window.admob.AD_POSITION.TOP_CENTER,    isTesting: ADMOB_CONFIG.mode==='test' });
-      window.admob.showBanner({ adUnitId: AD_IDS.bannerBottom, position: window.admob.AD_POSITION.BOTTOM_CENTER, isTesting: ADMOB_CONFIG.mode==='test' });
-    }
   }
-  let _lastInter = 0, _loaded = false, _timer = null;
+
+  let _lastInter = 0, _loaded = true, _timer = null;
+
   function preloadInterstitial() {
-    if (window.admob) {
-      window.admob.prepareInterstitial({ adUnitId: AD_IDS.interstitial, isTesting: ADMOB_CONFIG.mode==='test', autoShow: false });
-      document.addEventListener('admob.interstitial.events.LOADED', () => { _loaded = true; });
-    } else {
-      _loaded = true;
-    }
+    _loaded = true; // siempre listo con este sistema
   }
+
   function showInterstitial() {
     const elapsed = (Date.now() - _lastInter) / 1000;
     if (elapsed < ADMOB_CONFIG.interstitialCooldown || !_loaded) return;
     _lastInter = Date.now();
-    if (window.admob && ADMOB_CONFIG.mode === 'production') {
-      window.admob.showInterstitial();
-      setTimeout(preloadInterstitial, 1000);
-    } else {
-      _showOverlay();
-    }
+    _showOverlay();
   }
+
   function _showOverlay() {
     const overlay  = document.getElementById('ad-interstitial');
     const closeBtn = document.getElementById('ad-inter-close');
     const cntdown  = document.getElementById('ad-inter-countdown');
     let secs = ADMOB_CONFIG.interstitialCountdown;
-    closeBtn.disabled    = true;
-    cntdown.textContent  = secs;
+    closeBtn.disabled   = true;
+    cntdown.textContent = secs;
     overlay.classList.add('visible');
     _timer = setInterval(() => {
       secs--;
@@ -678,11 +698,12 @@ const AdMob = (() => {
       if (secs <= 0) { clearInterval(_timer); closeBtn.disabled = false; cntdown.textContent = ''; }
     }, 1000);
   }
+
   function closeOverlay() {
     document.getElementById('ad-interstitial').classList.remove('visible');
     clearInterval(_timer);
-    setTimeout(preloadInterstitial, 500);
   }
+
   return { initBanners, preloadInterstitial, showInterstitial, closeOverlay };
 })();
 
