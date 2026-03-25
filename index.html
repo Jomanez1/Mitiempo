@@ -28,7 +28,7 @@
         interstitial: 'ca-app-pub-2753616648390510/8848449268',  // ← intersticial
       },
 
-      interstitialCooldown:  180,  // segundos mínimos entre intersticiales
+      interstitialCooldown:  0,    // segundos mínimos entre intersticiales
       interstitialCountdown:   5,  // segundos del contador antes de cerrar
     };
     const AD_IDS = ADMOB_CONFIG[ADMOB_CONFIG.mode];
@@ -107,7 +107,6 @@
       --sky-night: linear-gradient(160deg, #0d1b3e 0%, #1a2d5a 60%, #243b6e 100%);
       --sky-dawn:  linear-gradient(160deg, #f7b97a 0%, #f6cfb0 50%, #dce8f5 100%);
       --sky-storm: linear-gradient(160deg, #555f70 0%, #8a95a0 60%, #b0bac3 100%);
-      --banner-h: 50px;
     }
 
     html, body { height: 100%; }
@@ -116,8 +115,7 @@
       min-height: 100vh;
       background: var(--sky-day);
       transition: background 1.2s ease;
-      padding-top: var(--banner-h);
-      padding-bottom: var(--banner-h);
+      padding-bottom: 60px; /* espacio para banner inferior fijo */
     }
     body.night { background: var(--sky-night); }
     body.dawn  { background: var(--sky-dawn); }
@@ -133,18 +131,14 @@
 
     /* ── AdMob banners ── */
     .ad-banner {
-      position: fixed; left: 0; right: 0; height: var(--banner-h);
-      background: #f1f5f9; display: flex; align-items: center; justify-content: center;
-      z-index: 1000; border: 1px dashed #cbd5e1;
-      font-size: .65rem; color: #94a3b8; letter-spacing: .05em; text-transform: uppercase;
+      width: 100%; height: 50px;
+      background: #f1f5f9;
+      display: flex; align-items: center; justify-content: center;
       overflow: hidden;
     }
-    .ad-banner-top    { top: 0; border-top: none; }
-    .ad-banner-bottom { bottom: 0; border-bottom: none; }
-    /* En production: fondo transparente pero mantenemos la altura */
-    body.ad-production .ad-banner { border: none; background: transparent; }
-    /* El ins siempre ocupa el espacio aunque esté vacío */
-    .ad-banner .adsbygoogle { display: block !important; min-height: 50px; width: 100%; }
+    .ad-banner-top    { position: sticky; top: 0; z-index: 1000; border-bottom: 1px dashed #cbd5e1; }
+    .ad-banner-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; border-top: 1px dashed #cbd5e1; }
+    .ad-banner .adsbygoogle { display: block !important; width: 100%; height: 50px; }
 
     /* ── Intersticial ── */
     #ad-interstitial {
