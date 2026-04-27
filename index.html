@@ -22,7 +22,7 @@
         interstitial: 'ca-app-pub-3940256099942544/1033173712',
       },
       production: {
-        appId:        'ca-app-pub-2753616648390510~2806355919',  // ← tu Publisher ID
+        appId:        'ca-pub-2753616648390510',  // ← tu Publisher ID
         bannerTop:    'ca-app-pub-2753616648390510/7413046263',  // ← banner superior
         bannerBottom: 'ca-app-pub-2753616648390510/8187639137',  // ← banner inferior
         interstitial: 'ca-app-pub-2753616648390510/8848449268',  // ← intersticial
@@ -340,6 +340,80 @@
     .logo-header img:hover { transform: scale(1.04); }
 
     .main-wrap { width:100%; max-width:480px; margin:0 auto; padding:1.75rem 1rem 3rem; position:relative; z-index:1; }
+  
+    /* ══════════════════════════════════════════════
+       WALKTHROUGH
+    ══════════════════════════════════════════════ */
+    #wt-overlay {
+      position: fixed; inset: 0; z-index: 10000;
+      pointer-events: none;
+    }
+    #wt-backdrop {
+      position: fixed; inset: 0; z-index: 10001;
+      background: rgba(10,20,40,0.68);
+      backdrop-filter: blur(2px);
+      transition: opacity .4s;
+    }
+    #wt-highlight {
+      position: fixed; z-index: 10002;
+      border-radius: 1rem;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.9), 0 0 0 9999px rgba(10,20,40,0.68);
+      transition: all .45s cubic-bezier(.4,0,.2,1);
+      pointer-events: none;
+      background: transparent;
+    }
+    #wt-tooltip {
+      position: fixed; z-index: 10003;
+      background: linear-gradient(145deg,#fff 0%,#f0f9ff 100%);
+      border: 1.5px solid rgba(186,230,253,0.8);
+      border-radius: 1.25rem;
+      padding: 1.1rem 1.3rem 1rem;
+      max-width: 300px; min-width: 230px;
+      box-shadow: 0 8px 32px rgba(3,105,161,0.18), 0 2px 8px rgba(0,0,0,0.08);
+      transition: all .4s cubic-bezier(.4,0,.2,1);
+      pointer-events: all;
+    }
+    #wt-tooltip .wt-emoji {
+      font-size: 1.8rem; display: block; margin-bottom: .45rem;
+    }
+    #wt-tooltip .wt-title {
+      font-size: .95rem; font-weight: 700; color: #0369a1; margin-bottom: .3rem;
+    }
+    #wt-tooltip .wt-body {
+      font-size: .82rem; color: #475569; line-height: 1.5;
+    }
+    #wt-tooltip .wt-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: .85rem;
+    }
+    #wt-tooltip .wt-dots {
+      display: flex; gap: 5px;
+    }
+    #wt-tooltip .wt-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #bae6fd; transition: background .3s;
+    }
+    #wt-tooltip .wt-dot.active { background: #0369a1; }
+    #wt-tooltip .wt-btn {
+      background: linear-gradient(135deg,#0ea5e9,#0369a1);
+      color: #fff; border: none; border-radius: 2rem;
+      padding: .45rem 1.1rem; font-size: .82rem; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans',sans-serif;
+      box-shadow: 0 3px 10px rgba(3,105,161,0.25);
+      transition: transform .15s, box-shadow .15s;
+    }
+    #wt-tooltip .wt-btn:active { transform: scale(0.96); }
+    #wt-skip {
+      position: fixed; top: 14px; right: 14px; z-index: 10004;
+      background: rgba(255,255,255,0.18); color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 2rem; padding: .3rem .85rem;
+      font-size: .75rem; font-family: 'DM Sans',sans-serif;
+      cursor: pointer; pointer-events: all;
+      backdrop-filter: blur(4px);
+      transition: background .2s;
+    }
+    #wt-skip:hover { background: rgba(255,255,255,0.30); }
   </style>
 </head>
 <body>
@@ -493,6 +567,41 @@
       <p class="section-label text-slate-400 mb-3 afu d5" data-i18n="next14">Próximos 14 días</p>
       <div id="forecast" class="afu d5"></div>
 
+      <!-- ── Valorar en Play Store ── -->
+      <div class="afu d5" style="margin-top:1.75rem;text-align:center;">
+        <div style="
+          background:rgba(255,255,255,0.45);
+          border:1.5px solid rgba(255,255,255,0.7);
+          border-radius:1.25rem;
+          padding:1.1rem 1.25rem 1rem;
+          backdrop-filter:blur(6px);
+        ">
+          <p style="font-size:.8rem;color:#475569;margin-bottom:.65rem;line-height:1.5;">
+            ¿Te está siendo útil Mitiempo?<br>
+            <span style="color:#0369a1;font-weight:600;">Valóranos en Play Store</span>, nos ayuda mucho 🙏
+          </p>
+          <a id="rate-btn" href="https://play.google.com/store/apps/details?id=TU_APP_ID_AQUI" target="_blank" rel="noopener"
+            style="
+              display:inline-flex;align-items:center;gap:.5rem;
+              background:linear-gradient(135deg,#0ea5e9,#0369a1);
+              color:#fff;text-decoration:none;
+              border-radius:2rem;padding:.55rem 1.4rem;
+              font-size:.85rem;font-weight:600;
+              font-family:'DM Sans',sans-serif;
+              box-shadow:0 4px 14px rgba(3,105,161,0.28);
+              transition:transform .15s,box-shadow .15s;
+            "
+            onmousedown="this.style.transform='scale(0.97)'"
+            onmouseup="this.style.transform='scale(1)'"
+            ontouchstart="this.style.transform='scale(0.97)'"
+            ontouchend="this.style.transform='scale(1)'"
+          >
+            ⭐⭐⭐⭐⭐ &nbsp;Valorar app
+          </a>
+          <p style="font-size:.65rem;color:#94a3b8;margin-top:.6rem;">Solo tarda 10 segundos · Gracias ❤️</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -501,6 +610,31 @@
     <a href="https://open-meteo.com" target="_blank" class="underline">Open-Meteo</a>
     · <span data-i18n="noKey">sin API key</span>
   </p>
+  <div class="text-center mt-3 mb-2">
+    <button onclick="wtRestart()" style="
+      background: rgba(255,255,255,0.4);
+      border: 1.5px solid rgba(255,255,255,0.7);
+      border-radius: 2rem;
+      padding: .4rem 1.1rem;
+      font-size: .75rem;
+      color: #0369a1;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background .2s, transform .15s;
+      box-shadow: 0 2px 8px rgba(3,105,161,0.1);
+    "
+    onmousedown="this.style.transform='scale(0.96)'"
+    onmouseup="this.style.transform='scale(1)'"
+    ontouchstart="this.style.transform='scale(0.96)'"
+    ontouchend="this.style.transform='scale(1)'"
+    onmouseover="this.style.background='rgba(255,255,255,0.65)'"
+    onmouseout="this.style.background='rgba(255,255,255,0.4)'"
+    >
+      ❓ Ver tutorial
+    </button>
+  </div>
 </div>
 
 <!-- ── Banner inferior ── -->
@@ -714,7 +848,13 @@ const AdMob = (() => {
   return { initBanners, preloadInterstitial, showInterstitial, closeOverlay };
 })();
 
-function closeInterstitial() { AdMob.closeOverlay(); }
+function closeInterstitial() {
+  AdMob.closeOverlay();
+  if (_wtPending) {
+    _wtPending = false;
+    setTimeout(() => wtStart(), 400);
+  }
+}
 
 
 // ════════════════════════════════════════════════════════════════
@@ -1040,10 +1180,13 @@ document.getElementById('city-input').addEventListener('keydown', e => {
   if(e.key==='Enter') fetchWeather();
 });
 
+let _wtPending = false; // walkthrough pendiente al cerrar el intersticial
+
 function startApp() {
   document.getElementById('welcome-screen').style.display = 'none';
   document.getElementById('main-wrap').style.display = '';
-  // Lanzar intersticial con pequeño delay
+  // Marcar que el walkthrough debe lanzarse al cerrar el intersticial
+  _wtPending = true;
   setTimeout(() => AdMob.showInterstitial(), 600);
 }
 
@@ -1068,5 +1211,195 @@ if (_lastCity) {
     navigator.serviceWorker.register('sw.js')
   }
 </script>
+
+<!-- ══════════════════════════════════════════════
+     WALKTHROUGH OVERLAY
+══════════════════════════════════════════════════ -->
+<div id="wt-overlay" style="display:none">
+  <div id="wt-backdrop"></div>
+  <div id="wt-highlight"></div>
+  <div id="wt-tooltip">
+    <span class="wt-emoji" id="wt-emoji">👋</span>
+    <div class="wt-title" id="wt-title"></div>
+    <div class="wt-body"  id="wt-body"></div>
+    <div class="wt-footer">
+      <div class="wt-dots" id="wt-dots"></div>
+      <button class="wt-btn" id="wt-next-btn" onclick="wtNext()">Siguiente →</button>
+    </div>
+  </div>
+  <button id="wt-skip" onclick="wtEnd()">Omitir ✕</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// WALKTHROUGH
+// ══════════════════════════════════════════════
+const WT_STEPS = [
+  {
+    target: 'city-input',
+    emoji: '🔍',
+    title: '¿Dónde quieres ver el tiempo?',
+    body: 'Escribe el nombre de cualquier ciudad del mundo y pulsa <b>Buscar</b>. Funciona con millones de localidades.',
+    placement: 'bottom'
+  },
+  {
+    target: 'geo-btn',
+    emoji: '📍',
+    title: 'Tu ubicación al instante',
+    body: 'Pulsa este botón para detectar automáticamente donde estás y ver el tiempo de tu posición actual.',
+    placement: 'bottom'
+  },
+  {
+    target: 'star-btn',
+    emoji: '⭐',
+    title: 'Guarda tus ciudades favoritas',
+    body: 'Pulsa la estrella para guardar la ciudad actual. Tus favoritos aparecen arriba para consultarlos con un solo toque.',
+    placement: 'bottom'
+  },
+  {
+    target: 'details',
+    emoji: '🌡️',
+    title: 'Condiciones actuales',
+    body: 'Temperatura, sensación térmica, humedad y viento del momento. Siempre actualizados desde Open-Meteo.',
+    placement: 'top'
+  },
+  {
+    target: 'tod',
+    emoji: '🕐',
+    title: 'Día por franjas horarias',
+    body: 'El día dividido en 6 tramos: Madrugada, Mañana, Mediodía, Tarde, Atardecer y Noche. Con temperatura, sensación, viento y lluvia de cada franja.',
+    placement: 'top'
+  },
+  {
+    target: 'forecast',
+    emoji: '📅',
+    title: 'Predicción a 14 días',
+    body: 'Pulsa cualquier día para ver sus franjas horarias. Verás máxima, mínima, sensación térmica, viento y mm de lluvia previstos.',
+    placement: 'top'
+  },
+  {
+    target: null,
+    emoji: '☀️',
+    title: '¡Todo listo!',
+    body: 'Ya conoces Mitiempo. El fondo cambia según el momento del día y el clima. ¡Esperamos que te sea muy útil!',
+    placement: 'center'
+  }
+];
+
+let wtStep = 0;
+
+function wtStart() {
+  if (localStorage.getItem('wt_done') === '1') return;
+  wtStep = 0;
+  document.getElementById('wt-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  wtRender();
+}
+
+function wtRender() {
+  const step  = WT_STEPS[wtStep];
+  const total = WT_STEPS.length;
+  const isLast = wtStep === total - 1;
+
+  // textos
+  document.getElementById('wt-emoji').textContent = step.emoji;
+  document.getElementById('wt-title').textContent = step.title;
+  document.getElementById('wt-body').innerHTML  = step.body;
+  document.getElementById('wt-next-btn').textContent = isLast ? '¡Empezar! 🚀' : 'Siguiente →';
+
+  // dots
+  const dots = document.getElementById('wt-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'wt-dot' + (i === wtStep ? ' active' : '');
+    dots.appendChild(d);
+  }
+
+  // highlight + tooltip
+  if (!step.target) {
+    wtCenterMode();
+  } else {
+    const el = document.getElementById(step.target);
+    if (!el) { wtNext(); return; }
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => wtPositionOn(el, step.placement), 350);
+  }
+}
+
+function wtPositionOn(el, placement) {
+  const r   = el.getBoundingClientRect();
+  const pad = 10;
+  const hl  = document.getElementById('wt-highlight');
+  const tt  = document.getElementById('wt-tooltip');
+
+  // highlight box
+  hl.style.left   = (r.left   - pad) + 'px';
+  hl.style.top    = (r.top    - pad) + 'px';
+  hl.style.width  = (r.width  + pad*2) + 'px';
+  hl.style.height = (r.height + pad*2) + 'px';
+  hl.style.display = 'block';
+  hl.style.boxShadow = '0 0 0 4px rgba(255,255,255,0.9), 0 0 0 9999px rgba(10,20,40,0.68)';
+
+  // tooltip position
+  const ttW = 280, ttH = 190;
+  const vw  = window.innerWidth, vh = window.innerHeight;
+  let tx, ty;
+
+  if (placement === 'bottom') {
+    tx = Math.min(Math.max(r.left + r.width/2 - ttW/2, 8), vw - ttW - 8);
+    ty = r.bottom + pad + 10;
+    if (ty + ttH > vh - 10) ty = r.top - ttH - pad - 10;
+  } else {
+    tx = Math.min(Math.max(r.left + r.width/2 - ttW/2, 8), vw - ttW - 8);
+    ty = r.top - ttH - pad - 10;
+    if (ty < 10) ty = r.bottom + pad + 10;
+  }
+
+  tt.style.left = tx + 'px';
+  tt.style.top  = ty + 'px';
+  tt.style.transform = 'none';
+}
+
+function wtCenterMode() {
+  const hl = document.getElementById('wt-highlight');
+  const tt = document.getElementById('wt-tooltip');
+  hl.style.display = 'none';
+  hl.style.boxShadow = 'none';
+
+  // backdrop solo
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const ttW = 290;
+  tt.style.left      = ((vw - ttW) / 2) + 'px';
+  tt.style.top       = ((vh - 220) / 2) + 'px';
+  tt.style.transform = 'none';
+}
+
+function wtNext() {
+  if (wtStep >= WT_STEPS.length - 1) {
+    wtEnd();
+  } else {
+    wtStep++;
+    wtRender();
+  }
+}
+
+function wtEnd() {
+  document.getElementById('wt-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  localStorage.setItem('wt_done', '1');
+}
+
+function wtRestart() {
+  localStorage.removeItem('wt_done');
+  wtStep = 0;
+  document.getElementById('wt-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  // Scroll al inicio para que el highlight funcione bien
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => wtRender(), 300);
+}
+</script>
+
 </body>
 </html>
