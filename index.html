@@ -955,11 +955,34 @@ function render(name, country, data) {
   renderForecast(daily);
 }
 
+function dominantIcon(dateStr) {
+  // Coge los códigos WMO de las horas diurnas (8h-20h) del día indicado
+  // y devuelve el icono del código más frecuente. Si no hay datos horarios
+  // cae de vuelta al código diario de la API.
+  if (!_hourlyData) return null;
+  const hourly = _hourlyData;
+  const codes = [];
+  for (let h = 8; h <= 20; h++) {
+    const key = dateStr + 'T' + String(h).padStart(2,'0') + ':00';
+    const idx = hourly.time?.indexOf(key);
+    if (idx !== undefined && idx >= 0 && hourly.weather_code[idx] !== undefined) {
+      codes.push(hourly.weather_code[idx]);
+    }
+  }
+  if (!codes.length) return null;
+  // Código más frecuente; en empate el de mayor valor (más severo)
+  const freq = {};
+  codes.forEach(c => freq[c] = (freq[c] || 0) + 1);
+  const maxFreq = Math.max(...Object.values(freq));
+  const candidates = Object.keys(freq).filter(c => freq[c] === maxFreq).map(Number);
+  return wmo(Math.max(...candidates)).icon;
+}
+
 function renderForecast(daily) {
   const allDays = daily.time.slice(0,14).map((dateStr,i) => {
     const date      = new Date(dateStr+'T12:00:00');
     const day       = i===0 ? t().todayWord : t().days[date.getDay()];
-    const fw        = wmo(daily.weather_code[i]);
+    const icon      = dominantIcon(dateStr) || wmo(daily.weather_code[i]).icon;
     const dateLabel = i===0 ? '' : `${date.getDate()}/${date.getMonth()+1}`;
     const isSelected = i === _selectedDayIndex;
     return `
@@ -967,7 +990,7 @@ function renderForecast(daily) {
            onclick="selectDay(${i}, '${dateStr}')" style="cursor:pointer">
         <p class="text-xs font-medium ${i===0?'text-slate-700':'text-slate-500'}">${day}</p>
         ${dateLabel?`<p class="text-slate-400" style="font-size:.6rem;line-height:1.2">${dateLabel}</p>`:''}
-        <p class="text-base my-1">${fw.icon}</p>
+        <p class="text-base my-1">${icon}</p>
         <p class="text-slate-700 font-semibold" style="font-size:.78rem">${Math.round(daily.temperature_2m_max[i])}°</p>
         <p class="text-slate-400" style="font-size:.72rem">${Math.round(daily.temperature_2m_min[i])}°</p>
         <p class="text-slate-500" style="font-size:.65rem;margin-top:1px">🌡️${daily.apparent_temperature_max?.[i] !== undefined ? Math.round(daily.apparent_temperature_max[i]) + '°' : Math.round((daily.temperature_2m_max[i]+daily.temperature_2m_min[i])/2) + '°'}</p>
