@@ -7,34 +7,10 @@
   <meta name="description" content="Mitiempo - El tiempo actual por franjas y prediccion a 14 dias gratis">
   <title>Mitiempo</title>
 
-  <!-- ════════════════════════════════════════════════════════════
-       ★  CONFIGURACIÓN ADMOB  ★
-       Cambia mode → 'production' y rellena tus IDs al publicar.
-  ════════════════════════════════════════════════════════════════ -->
-  <script>
-    const ADMOB_CONFIG = {
-      mode: 'production',   // 'test' | 'production'
-
-      test: {
-        appId:        'ca-pub-3940256099942544',
-        bannerTop:    'ca-app-pub-3940256099942544/6300978111',
-        bannerBottom: 'ca-app-pub-3940256099942544/6300978111',
-        interstitial: 'ca-app-pub-3940256099942544/1033173712',
-      },
-      production: {
-        appId:        'ca-pub-2753616648390510',  // ← tu Publisher ID
-        bannerTop:    'ca-app-pub-2753616648390510/7413046263',  // ← banner superior
-        bannerBottom: 'ca-app-pub-2753616648390510/8187639137',  // ← banner inferior
-        interstitial: 'ca-app-pub-2753616648390510/8848449268',  // ← intersticial
-      },
-
-      interstitialCooldown:  0,    // segundos mínimos entre intersticiales
-      interstitialCountdown:   5,  // segundos del contador antes de cerrar
-    };
-    const AD_IDS = ADMOB_CONFIG[ADMOB_CONFIG.mode];
-  </script>
 
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
   <style>
 
@@ -129,57 +105,6 @@
       pointer-events: none; opacity: .45; z-index: 0;
     }
 
-    /* ── AdMob banners ── */
-    .ad-banner {
-      width: 100%; height: 50px; max-height: 50px;
-      background: #f1f5f9;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden; flex-shrink: 0;
-    }
-    .ad-banner-top    { position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
-    .ad-banner-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; border-top: 1px solid #e2e8f0; }
-    .ad-banner ins, .ad-banner .adsbygoogle {
-      display: block !important;
-      width: 320px !important; height: 50px !important;
-      max-height: 50px !important; overflow: hidden !important;
-    }
-
-    /* ── Intersticial ── */
-    #ad-interstitial {
-      display: none; position: fixed; inset: 0; z-index: 9000;
-      background: rgba(0,0,0,0.88); flex-direction: column;
-      align-items: center; justify-content: center;
-    }
-    #ad-interstitial.visible { display: flex; }
-    .ad-inter-box {
-      background: #fff; border-radius: 1.25rem; width: min(340px,90vw);
-      overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.4); position: relative;
-    }
-    .ad-inter-header {
-      background: #f8fafc; border-bottom: 1px solid #e2e8f0;
-      padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;
-    }
-    .ad-inter-label { font-size: .65rem; color: #94a3b8; letter-spacing: .06em; text-transform: uppercase; }
-    .ad-inter-close {
-      background: #e2e8f0; border: none; cursor: pointer;
-      border-radius: 999px; width: 28px; height: 28px;
-      font-size: .9rem; color: #475569;
-      display: flex; align-items: center; justify-content: center; transition: background .15s;
-    }
-    .ad-inter-close:hover { background: #cbd5e1; }
-    .ad-inter-close:disabled { opacity: .4; cursor: not-allowed; }
-    .ad-inter-body {
-      height: 360px; background: linear-gradient(135deg,#e0f2fe,#f0fdf4);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 8px; color: #64748b; font-size: .8rem;
-    }
-    .ad-inter-body .ad-placeholder-icon { font-size: 3rem; }
-    .ad-inter-countdown {
-      position: absolute; top: 10px; right: 52px;
-      background: rgba(0,0,0,0.55); color: #fff;
-      font-size: .72rem; font-weight: 600; border-radius: 999px; padding: 3px 9px;
-      pointer-events: none;
-    }
 
     /* ── Language toggle ── */
     .lang-toggle {
@@ -418,27 +343,6 @@
 </head>
 <body>
 
-<!-- ── Banner superior ── -->
-<div class="ad-banner ad-banner-top" id="ad-banner-top">
-  <ins class="adsbygoogle"
-       style="display:inline-block;width:320px;height:50px"></ins>
-</div>
-
-<!-- ── Intersticial overlay ── -->
-<div id="ad-interstitial" role="dialog" aria-modal="true">
-  <div class="ad-inter-box">
-    <div class="ad-inter-header">
-      <span class="ad-inter-label" id="ad-inter-label-text">Ad</span>
-      <span class="ad-inter-countdown" id="ad-inter-countdown">5</span>
-      <button class="ad-inter-close" id="ad-inter-close" disabled onclick="closeInterstitial()">✕</button>
-    </div>
-    <div class="ad-inter-body" id="ad-inter-body" data-ad-unit-id="">
-      <span class="ad-placeholder-icon">📺</span>
-      <span id="ad-inter-placeholder-text">Interstitial ad space</span>
-      <span style="font-size:.7rem;color:#94a3b8">(AdMob · test mode)</span>
-    </div>
-  </div>
-</div>
 
 
 <!-- ══════════════════════════════════════════════
@@ -515,6 +419,52 @@
     <div id="fav-list" class="flex flex-wrap gap-2 min-h-26 items-center">
       <span class="text-slate-400 text-xs" data-i18n="noFavs">Sin favoritos aún</span>
     </div>
+  </div>
+
+  <!-- Botones de acceso rápido -->
+  <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem;">
+    <button onclick="wtRestart()" style="
+      background: rgba(255,255,255,0.4);
+      border: 1.5px solid rgba(255,255,255,0.7);
+      border-radius: 2rem;
+      padding: .4rem 1.1rem;
+      font-size: .75rem;
+      color: #0369a1;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background .2s, transform .15s;
+      box-shadow: 0 2px 8px rgba(3,105,161,0.1);
+    "
+    onmousedown="this.style.transform='scale(0.96)'"
+    onmouseup="this.style.transform='scale(1)'"
+    ontouchstart="this.style.transform='scale(0.96)'"
+    ontouchend="this.style.transform='scale(1)'"
+    onmouseover="this.style.background='rgba(255,255,255,0.65)'"
+    onmouseout="this.style.background='rgba(255,255,255,0.4)'"
+    >❓ Ver tutorial</button>
+    <button onclick="openRadar()" style="
+      background: rgba(255,255,255,0.4);
+      border: 1.5px solid rgba(255,255,255,0.7);
+      border-radius: 2rem;
+      padding: .4rem 1.1rem;
+      font-size: .75rem;
+      color: #0369a1;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background .2s, transform .15s;
+      box-shadow: 0 2px 8px rgba(3,105,161,0.1);
+    "
+    onmousedown="this.style.transform='scale(0.96)'"
+    onmouseup="this.style.transform='scale(1)'"
+    ontouchstart="this.style.transform='scale(0.96)'"
+    ontouchend="this.style.transform='scale(1)'"
+    onmouseover="this.style.background='rgba(255,255,255,0.65)'"
+    onmouseout="this.style.background='rgba(255,255,255,0.4)'"
+    >🌧️ Radar</button>
   </div>
 
   <!-- Tarjeta principal -->
@@ -609,37 +559,63 @@
     <a href="https://open-meteo.com" target="_blank" class="underline">Open-Meteo</a>
     · <span data-i18n="noKey">sin API key</span>
   </p>
-  <div class="text-center mt-3 mb-2">
-    <button onclick="wtRestart()" style="
-      background: rgba(255,255,255,0.4);
-      border: 1.5px solid rgba(255,255,255,0.7);
-      border-radius: 2rem;
-      padding: .4rem 1.1rem;
-      font-size: .75rem;
-      color: #0369a1;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 600;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
-      transition: background .2s, transform .15s;
-      box-shadow: 0 2px 8px rgba(3,105,161,0.1);
-    "
-    onmousedown="this.style.transform='scale(0.96)'"
-    onmouseup="this.style.transform='scale(1)'"
-    ontouchstart="this.style.transform='scale(0.96)'"
-    ontouchend="this.style.transform='scale(1)'"
-    onmouseover="this.style.background='rgba(255,255,255,0.65)'"
-    onmouseout="this.style.background='rgba(255,255,255,0.4)'"
-    >
-      ❓ Ver tutorial
-    </button>
-  </div>
 </div>
 
-<!-- ── Banner inferior ── -->
-<div class="ad-banner ad-banner-bottom" id="ad-banner-bottom">
-  <ins class="adsbygoogle"
-       style="display:inline-block;width:320px;height:50px"></ins>
+<!-- ══════════════════════════════════════════════
+     PANTALLA RADAR
+══════════════════════════════════════════════════ -->
+<div id="radar-screen" style="
+  display:none; position:fixed; inset:0; z-index:8000;
+  background:#0f172a; flex-direction:column;
+">
+  <!-- Header -->
+  <div style="
+    display:flex; align-items:center; justify-content:space-between;
+    padding:.75rem 1rem; background:rgba(15,23,42,0.95);
+    border-bottom:1px solid rgba(255,255,255,0.08); flex-shrink:0;
+  ">
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span style="font-size:1.2rem;">🌧️</span>
+      <span style="color:#e2e8f0;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.95rem;" id="radar-title">Radar de precipitaciones</span>
+    </div>
+    <button onclick="closeRadar()" style="
+      background:rgba(255,255,255,0.08); border:none; cursor:pointer;
+      border-radius:999px; width:32px; height:32px; font-size:1rem;
+      color:#94a3b8; display:flex; align-items:center; justify-content:center;
+      transition:background .15s;
+    "
+    onmouseover="this.style.background='rgba(255,255,255,0.15)'"
+    onmouseout="this.style.background='rgba(255,255,255,0.08)'"
+    >✕</button>
+  </div>
+  <!-- Controles de animación -->
+  <!-- Windy tiene su propio reproductor integrado -->
+  <!-- Iframe Windy -->
+  <div style="flex:1;position:relative;">
+    <div id="radar-loading" style="
+      position:absolute;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:.75rem;
+      background:#0f172a; z-index:1000;pointer-events:none;
+    ">
+      <div style="width:36px;height:36px;border:3px solid rgba(255,255,255,0.1);border-top-color:#38bdf8;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <span style="color:#94a3b8;font-size:.8rem;font-family:'DM Sans',sans-serif;" id="radar-loading-text">Cargando radar…</span>
+    </div>
+    <iframe id="radar-iframe"
+      style="width:100%;height:100%;border:none;display:block;"
+      allowfullscreen
+      onload="document.getElementById('radar-loading').style.display='none'">
+    </iframe>
+  </div>
+  <!-- Footer -->
+  <div style="
+    padding:.5rem 1rem; background:rgba(15,23,42,0.95);
+    border-top:1px solid rgba(255,255,255,0.08);
+    text-align:center; flex-shrink:0;
+  ">
+    <span style="color:#475569;font-size:.65rem;font-family:'DM Sans',sans-serif;">
+      Datos meteorológicos © <a href="https://www.windy.com" target="_blank" style="color:#38bdf8;text-decoration:none;">Windy</a>
+    </span>
+  </div>
 </div>
 
 
@@ -660,11 +636,8 @@ const TRANSLATIONS = {
     dataBy:      'Datos:',
     noKey:       'sin API key',
     starTitle:   'Guardar en favoritos',
-    adLabel:     'Anuncio',
-    adPlaceholder: 'Espacio para anuncio intersticial',
-    adMode:      '(AdMob · modo test)',
-    adBannerTop: '📢 Anuncio · Banner Superior (AdMob)',
-    adBannerBot: '📢 Anuncio · Banner Inferior (AdMob)',
+    radarTitle:  'Radar de precipitaciones',
+    radarLoading:'Cargando radar…',
     errorPrefix: '⚠️ ',
     notFound:    c => `No encontré "${c}"`,
     geoError:    'No se pudo obtener la ubicación',
@@ -712,11 +685,8 @@ const TRANSLATIONS = {
     dataBy:      'Data:',
     noKey:       'no API key',
     starTitle:   'Save to favourites',
-    adLabel:     'Advertisement',
-    adPlaceholder: 'Interstitial ad space',
-    adMode:      '(AdMob · test mode)',
-    adBannerTop: '📢 Ad · Top Banner (AdMob)',
-    adBannerBot: '📢 Ad · Bottom Banner (AdMob)',
+    radarTitle:  'Precipitation radar',
+    radarLoading:'Loading radar…',
     errorPrefix: '⚠️ ',
     notFound:    c => `Could not find "${c}"`,
     geoError:    'Could not get your location',
@@ -768,10 +738,9 @@ function applyStaticTranslations() {
     if (typeof t()[key] === 'string') el.textContent = t()[key];
   });
   // Elementos fuera de data-i18n
-  // banners gestionados por adsbygoogle, sin labels de texto
-  document.getElementById('ad-inter-label-text').textContent    = t().adLabel;
-  document.getElementById('ad-inter-placeholder-text').textContent = t().adPlaceholder;
-  document.getElementById('star-btn').title              = t().starTitle;
+  document.getElementById('star-btn').title = t().starTitle;
+  const radarTitleEl = document.getElementById('radar-title');
+  if (radarTitleEl) radarTitleEl.textContent = t().radarTitle || 'Radar de precipitaciones';
   document.getElementById('city-input').placeholder      = lang === 'es' ? 'Ciudad o código postal…' : 'City or postcode…';
 }
 
@@ -787,89 +756,28 @@ const WMO_ICONS = {
   71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',
   95:'⛈️',96:'⛈️',99:'⛈️',
 };
-function wmo(code) {
+// Iconos nocturnos para cielo despejado o poco nublado
+const WMO_ICONS_NIGHT = { 0:'🌙', 1:'🌙', 2:'☁️' };
+
+function wmo(code, isNight = false) {
+  const icon = (isNight && WMO_ICONS_NIGHT[code]) ? WMO_ICONS_NIGHT[code] : (WMO_ICONS[code] || '🌡️');
   return {
     label: t().wmoLabels[code] || '—',
-    icon:  WMO_ICONS[code]     || '🌡️',
+    icon,
   };
 }
 
 
-// ════════════════════════════════════════════════════════════════
-//  ADMOB — mismo sistema que MetroMaestro
-// ════════════════════════════════════════════════════════════════
 
-// IIFE: inyectar script y configurar banners inmediatamente (igual que MetroMaestro)
-(function() {
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + AD_IDS.appId;
-  script.crossOrigin = 'anonymous';
-
-  // Asignar atributos antes de que cargue el script
-  document.querySelectorAll('.adsbygoogle').forEach(function(ad, idx) {
-    ad.setAttribute('data-ad-client', AD_IDS.appId);
-    ad.setAttribute('data-ad-slot', idx === 0 ? AD_IDS.bannerTop.split('/')[1] : AD_IDS.bannerBottom.split('/')[1]);
-  });
-
-  // Hacer el push() solo cuando el script haya cargado completamente
-  script.onload = function() {
-    document.querySelectorAll('.adsbygoogle').forEach(function() {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    });
-  };
-
-  document.head.appendChild(script);
-})();
-
-const AdMob = (() => {
-  function initBanners() {}      // ya hecho en el IIFE
-  function preloadInterstitial() {}
-
-  let _lastInter = 0, _timer = null;
-
-  function showInterstitial() {
-    const elapsed = (Date.now() - _lastInter) / 1000;
-    if (elapsed < ADMOB_CONFIG.interstitialCooldown) return;
-    _lastInter = Date.now();
-    _showOverlay();
-  }
-  function _showOverlay() {
-    const overlay  = document.getElementById('ad-interstitial');
-    const closeBtn = document.getElementById('ad-inter-close');
-    const cntdown  = document.getElementById('ad-inter-countdown');
-    let secs = ADMOB_CONFIG.interstitialCountdown;
-    closeBtn.disabled   = true;
-    cntdown.textContent = secs;
-    overlay.classList.add('visible');
-    _timer = setInterval(() => {
-      secs--;
-      cntdown.textContent = secs;
-      if (secs <= 0) { clearInterval(_timer); closeBtn.disabled = false; cntdown.textContent = ''; }
-    }, 1000);
-  }
-  function closeOverlay() {
-    document.getElementById('ad-interstitial').classList.remove('visible');
-    clearInterval(_timer);
-  }
-  return { initBanners, preloadInterstitial, showInterstitial, closeOverlay };
-})();
-
-function closeInterstitial() {
-  AdMob.closeOverlay();
-  if (_wtPending) {
-    _wtPending = false;
-    setTimeout(() => wtStart(), 400);
-  }
-}
 
 
 // ════════════════════════════════════════════════════════════════
 //  ESTADO
 // ════════════════════════════════════════════════════════════════
 let currentCity    = '';
+let _lastLat       = 40.4168; // Madrid por defecto
+let _lastLon       = -3.7038;
 let favorites      = JSON.parse(localStorage.getItem('wx_favs') || '[]');
-let searchCount    = 0;
 let _lastRenderData = null;   // cache para re-render al cambiar idioma
 let _hourlyData    = null;    // datos horarios cacheados
 let _selectedDayIndex = 0;   // día seleccionado en el forecast (0 = hoy)
@@ -905,6 +813,7 @@ async function fetchWeather(overrideCity) {
   showLoading(true); clearError();
   try {
     const {latitude:lat, longitude:lon, name, country} = await geocode(city);
+    _lastLat = lat; _lastLon = lon;
     const r = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
       + `&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day`
@@ -918,9 +827,6 @@ async function fetchWeather(overrideCity) {
     localStorage.setItem('wx_last_city', document.getElementById('city-input').value.trim());
     render(name, country, data);
     updateStar();
-
-    searchCount++;
-    if (searchCount % 3 === 0) setTimeout(() => AdMob.showInterstitial(), 800);
 
   } catch(e) {
     showError(e.message);
@@ -1061,8 +967,9 @@ function renderTOD(hourly, dayIndex, dateStr) {
   if (labelEl) labelEl.textContent = dayLabel;
 
   document.getElementById('tod').innerHTML = slots.map(slot => {
+    const isNight = slot.start >= 22 || slot.end <= 5; // noche y madrugada
     const stats = sliceStats(slot.start, slot.end);
-    const icon  = stats ? wmo(stats.code).icon : slot.emoji;
+    const icon  = stats ? wmo(stats.code, isNight).icon : slot.emoji;
     const temp  = stats ? stats.temp + '°' : '—';
     const feels = stats && stats.feels !== undefined ? '🌡️' + stats.feels + '°' : '';
     const wind  = stats && stats.wind  !== undefined ? '💨' + stats.wind        : '';
@@ -1181,9 +1088,6 @@ async function geoLocate() {
         render(cityName, country, data);
         updateStar();
 
-        searchCount++;
-        if (searchCount % 3 === 0) setTimeout(() => AdMob.showInterstitial(), 800);
-
       } catch(e) {
         showError(t().geoError || 'Error de geolocalización');
       } finally {
@@ -1210,19 +1114,12 @@ document.getElementById('city-input').addEventListener('keydown', e => {
   if(e.key==='Enter') fetchWeather();
 });
 
-let _wtPending = false; // walkthrough pendiente al cerrar el intersticial
-
 function startApp() {
   document.getElementById('welcome-screen').style.display = 'none';
   document.getElementById('main-wrap').style.display = '';
-  // Marcar que el walkthrough debe lanzarse al cerrar el intersticial
-  _wtPending = true;
-  setTimeout(() => AdMob.showInterstitial(), 600);
+  wtStart();
 }
 
-AdMob.initBanners();
-AdMob.preloadInterstitial();
-setTimeout(() => AdMob.showInterstitial(), 3000); // intersticial al arrancar
 applyStaticTranslations();
 updateLangButtons();
 renderFavs();
@@ -1428,6 +1325,43 @@ function wtRestart() {
   // Scroll al inicio para que el highlight funcione bien
   window.scrollTo({ top: 0, behavior: 'smooth' });
   setTimeout(() => wtRender(), 300);
+}
+
+// ════════════════════════════════════════════════════════════════
+//  RADAR DE PRECIPITACIONES — Windy widget embebido
+// ════════════════════════════════════════════════════════════════
+let _radarMap = null, _radarLayer = null, _radarFrames = [], _radarIdx = 0, _radarTimer = null, _radarPlaying = false;
+
+function openRadar() {
+  const screen = document.getElementById('radar-screen');
+  screen.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('radar-title').textContent = t().radarTitle || 'Radar de precipitaciones';
+  document.getElementById('radar-loading').style.display = 'flex';
+
+  // Windy embed con capa de precipitación, centrado en la ciudad actual
+  const zoom = 7;
+  const url = `https://embed.windy.com/embed2.html`
+    + `?lat=${_lastLat.toFixed(4)}&lon=${_lastLon.toFixed(4)}&detailLat=${_lastLat.toFixed(4)}&detailLon=${_lastLon.toFixed(4)}`
+    + `&width=100%&height=100%&zoom=${zoom}&level=surface&overlay=rain&product=ecmwf`
+    + `&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates`
+    + `&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
+
+  const iframe = document.getElementById('radar-iframe');
+  iframe.src = url;
+  screen.style.display = 'flex';
+}
+
+function radarTogglePlay() {
+  // Windy tiene su propio reproductor integrado, este botón no aplica
+}
+
+function closeRadar() {
+  const screen = document.getElementById('radar-screen');
+  const iframe = document.getElementById('radar-iframe');
+  screen.style.display = 'none';
+  iframe.src = '';
+  document.body.style.overflow = '';
 }
 </script>
 
